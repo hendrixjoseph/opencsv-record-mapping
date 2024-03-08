@@ -54,7 +54,7 @@ class RecordMappingStrategyTest {
 
         csvWriter.write(list);
 
-        assertEquals("'INTEGER','STRING'\n'1','one'\n", stringWriter.toString());
+        assertEquals("'integer','string'\n'1','one'\n", stringWriter.toString());
     }
 
     @Test
@@ -66,8 +66,8 @@ class RecordMappingStrategyTest {
         );
 
         var csvWriter = new StatefulBeanToCsvBuilder<TestRecord>(stringWriter)
-                .withQuotechar('\'')
                 .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
+                .withMappingStrategy(new RecordMappingStrategy<>(TestRecord.class))
                 .build();
 
         csvWriter.write(originalList);

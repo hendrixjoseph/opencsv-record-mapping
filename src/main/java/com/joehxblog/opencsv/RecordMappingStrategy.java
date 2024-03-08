@@ -1,9 +1,13 @@
 package com.joehxblog.opencsv;
 
-import com.opencsv.bean.HeaderColumnNameMappingStrategy;
+import com.opencsv.bean.*;
+import com.opencsv.exceptions.CsvBadConverterException;
 import com.opencsv.exceptions.CsvConstraintViolationException;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import org.apache.commons.collections4.ListValuedMap;
 
+import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.stream.Stream;
 
@@ -24,13 +28,13 @@ public class RecordMappingStrategy<T extends Record> extends HeaderColumnNameMap
                     var index = this.headerIndex.getByName(recordComponent.getName())[0];
                     var cell = line[index];
 
-
-
                     if (cell.isBlank()) {
                         return null;
                     } else {
+
                         var type = recordComponent.getType();
                         var field = this.findField(index).getField();
+
                         var converter = this.determineConverter(field, type, null, null, null);
 
                         try {
@@ -52,4 +56,30 @@ public class RecordMappingStrategy<T extends Record> extends HeaderColumnNameMap
         return newInstance;
     }
 
+    @Override
+    protected void loadUnadornedFieldMap(ListValuedMap<Class<?>, Field> fields) {
+        fields.entries().stream()
+                .filter(entry -> !(Serializable.class.isAssignableFrom(entry.getKey()) && "serialVersionUID".equals(entry.getValue().getName())))
+                .filter(entry -> !entry.getValue().isAnnotationPresent(CsvRecurse.class))
+                .forEach(entry -> {
+                    var converter = determineConverter(entry.getValue(), entry.getValue().getType(), null, null, null);
+                    fieldMap.put(entry.getValue().getName(), new BeanFieldSingleValue<>(
+                            entry.getKey(), entry.getValue(),
+                            false, errorLocale, converter, null, null));
+                });
+    }
+
+    @Override
+    protected BeanField<T, String> findField(int col) throws CsvBadConverterException {
+        BeanField<T, String> beanField = null;
+        String columnName = getColumnName(col);
+        if (columnName == null) {
+            return null;
+        }
+        columnName = columnName.trim();
+        if (!columnName.isEmpty()) {
+            beanField = fieldMap.get(columnName);
+        }
+        return beanField;
+    }
 }
