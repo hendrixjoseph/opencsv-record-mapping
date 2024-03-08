@@ -3,9 +3,9 @@ package com.joehxblog.opencsv;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -13,7 +13,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RecordMappingStrategyTest {
 
@@ -87,6 +88,28 @@ class RecordMappingStrategyTest {
         csvReader.close();
 
         assertEquals(originalList, actualList);
+    }
 
+    /**
+     * This test shows that the traditional HeaderColumnNameMappingStrategy does not work
+     * with records.
+     * <p>
+     * Should this test ever fail, then RecordMappingStrategy may no longer be necessary.
+     */
+    @DisplayName("Show that HeaderColumnNameMappingStrategy doesn't work.")
+    @Test
+    void testHeaderColumnNameMappingStrategy() {
+        var stringReader = new StringReader("string,integer\none,1");
+
+        var csvReader = new CSVReader(stringReader);
+
+        var headerColumnNameMappingStrategy = new HeaderColumnNameMappingStrategy<TestRecord>();
+        headerColumnNameMappingStrategy.setType(TestRecord.class);
+
+        var csvToBeanBuilder = new CsvToBeanBuilder<TestRecord>(csvReader)
+                .withType(TestRecord.class)
+                .withMappingStrategy(headerColumnNameMappingStrategy);
+
+        assertThrows(RuntimeException.class, () -> csvToBeanBuilder.build().parse());
     }
 }
