@@ -8,6 +8,30 @@
     <artifactId>opencsv-record-mapping</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <licenses>
+        <license>
+            <name>Apache 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>This is the same licence as OpenCsv.</comments>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Joseph Hendrix</name>
+            <email>contact@joehxblog.com</email>
+            <organization>Joseph Hendrix</organization>
+            <organizationUrl>https://www.joehxblog.com/</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/hendrixjoseph/opencsv-record-mapping.git</connection>
+        <developerConnection>scm:git:ssh://github.com:hendrixjoseph/opencsv-record-mapping.git</developerConnection>
+        <url>http://github.com/hendrixjoseph/opencsv-record-mapping/tree/master</url>
+    </scm>
+
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
