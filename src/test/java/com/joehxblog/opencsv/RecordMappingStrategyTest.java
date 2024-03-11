@@ -90,6 +90,13 @@ class RecordMappingStrategyTest {
         assertEquals(originalList, actualList);
     }
 
+    @Test
+    void testPrivateConstructorDoesNotWork() {
+        record PrivateRecord(String string) {}
+
+        assertThrows(RuntimeException.class, () -> new RecordMappingStrategy<>(PrivateRecord.class));
+    }
+
     /**
      * This test shows that the traditional HeaderColumnNameMappingStrategy does not work
      * with records.

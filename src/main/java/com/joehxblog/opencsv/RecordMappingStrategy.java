@@ -16,7 +16,11 @@ import java.util.stream.Stream;
 public class RecordMappingStrategy<T extends Record> extends HeaderColumnNameMappingStrategy<T> {
 
     public RecordMappingStrategy(Class<T> type) {
-        this.setType(type);
+        if (type.getConstructors().length > 0) {
+            this.setType(type);
+        } else {
+            throw new RuntimeException("record needs to have its constructor be public");
+        }
     }
 
     @Override
