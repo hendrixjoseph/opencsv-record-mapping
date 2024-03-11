@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RecordMappingStrategyTest {
 
-    public record TestRecord(String string, int integer) {};
+    public record TestRecord(String string, int integer) {}
 
     @Test
     void testParse() throws IOException {

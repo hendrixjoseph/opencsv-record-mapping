@@ -9,6 +9,7 @@ import org.apache.commons.collections4.ListValuedMap;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.RecordComponent;
 import java.util.stream.Stream;
 
 
@@ -24,36 +25,14 @@ public class RecordMappingStrategy<T extends Record> extends HeaderColumnNameMap
         var recordComponents = this.type.getRecordComponents();
 
         var initArgs = Stream.of(recordComponents)
-                .map(recordComponent -> {
-                    var index = this.headerIndex.getByName(recordComponent.getName())[0];
-                    var cell = line[index];
-
-                    if (cell.isBlank()) {
-                        return null;
-                    } else {
-
-                        var type = recordComponent.getType();
-                        var field = this.findField(index).getField();
-
-                        var converter = this.determineConverter(field, type, null, null, null);
-
-                        try {
-                            return converter.convertToRead(cell);
-                        } catch (CsvDataTypeMismatchException | CsvConstraintViolationException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                })
+                .map(recordComponent -> this.createParameter(line, recordComponent))
                 .toArray();
 
-        T newInstance = null;
         try {
-            newInstance = (T) constructor.newInstance(initArgs);
+            return (T) constructor.newInstance(initArgs);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-
-        return newInstance;
     }
 
     @Override
@@ -72,14 +51,40 @@ public class RecordMappingStrategy<T extends Record> extends HeaderColumnNameMap
     @Override
     protected BeanField<T, String> findField(int col) throws CsvBadConverterException {
         BeanField<T, String> beanField = null;
-        String columnName = getColumnName(col);
+
+        var columnName = getColumnName(col);
+
         if (columnName == null) {
             return null;
         }
+
         columnName = columnName.trim();
+
         if (!columnName.isEmpty()) {
             beanField = fieldMap.get(columnName);
         }
+
         return beanField;
+    }
+
+    private Object createParameter(String[] line, RecordComponent recordComponent) {
+        var index = this.headerIndex.getByName(recordComponent.getName())[0];
+        var cell = line[index];
+
+        if (cell.isBlank()) {
+            return null;
+        } else {
+
+            var type = recordComponent.getType();
+            var field = this.findField(index).getField();
+
+            var converter = this.determineConverter(field, type, null, null, null);
+
+            try {
+                return converter.convertToRead(cell);
+            } catch (CsvDataTypeMismatchException | CsvConstraintViolationException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
