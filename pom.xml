@@ -7,6 +7,13 @@
     <groupId>com.joehxblog</groupId>
     <artifactId>opencsv-record-mapping</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>
+        A record mapping strategy that allows OpenCSV to read and write Java Records.
+    </description>
+    <url>https://github.com/hendrixjoseph/opencsv-record-mapping</url>
 
     <licenses>
         <license>

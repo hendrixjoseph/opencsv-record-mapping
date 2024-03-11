@@ -1,5 +1,7 @@
 # Record Mapping Strategy for OpenCSV
 
+A record mapping strategy that allows OpenCSV to read and write Java Records.
+
 ## How to use
 
 To read from a CSV:
