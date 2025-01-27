@@ -6,7 +6,7 @@
 
     <groupId>com.joehxblog</groupId>
     <artifactId>opencsv-record-mapping</artifactId>
-    <version>5.9</version>
+    <version>5.10</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -49,12 +49,12 @@
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>5.9</version>
+            <version>5.10</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.10.2</version>
+            <version>5.11.4</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
