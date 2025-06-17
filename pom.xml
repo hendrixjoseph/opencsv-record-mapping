@@ -6,7 +6,7 @@
 
     <groupId>com.joehxblog</groupId>
     <artifactId>opencsv-record-mapping</artifactId>
-    <version>5.10</version>
+    <version>5.11.1</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -20,7 +20,7 @@
             <name>Apache 2</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
-            <comments>This is the same licence as OpenCsv.</comments>
+            <comments>This is the same licence as OpenCSV.</comments>
         </license>
     </licenses>
 
@@ -49,15 +49,27 @@
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>5.10</version>
+            <version>5.11.1</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.11.4</version>
+            <version>5.13.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>5.13.1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <distributionManagement>
         <snapshotRepository>
@@ -69,7 +81,6 @@
             <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-
 
     <build>
         <plugins>
@@ -126,5 +137,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
