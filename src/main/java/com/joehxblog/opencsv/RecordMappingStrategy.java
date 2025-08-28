@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.RecordComponent;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 
@@ -62,17 +63,22 @@ public class RecordMappingStrategy<T extends Record> extends HeaderColumnNameMap
             return null;
         }
 
-        columnName = columnName.trim();
+        final var finalColumnName = columnName.trim().replace(" ", "");
 
         if (!columnName.isEmpty()) {
-            beanField = fieldMap.get(columnName);
+            beanField = Objects.requireNonNullElseGet(
+                    fieldMap.get(finalColumnName),
+                    () -> fieldMap.values().stream()
+                    .filter(b -> b.getField().getName().equalsIgnoreCase(finalColumnName))
+                    .findFirst()
+                    .orElseThrow());
         }
 
         return beanField;
     }
 
     private Object createParameter(String[] line, RecordComponent recordComponent) {
-        var index = this.headerIndex.getByName(recordComponent.getName())[0];
+        var index = getIndex(recordComponent);
         var cell = line[index];
 
         if (cell.isBlank()) {
@@ -90,5 +96,25 @@ public class RecordMappingStrategy<T extends Record> extends HeaderColumnNameMap
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private int getIndex(RecordComponent recordComponent) {
+        var indexArray = this.headerIndex.getByName(recordComponent.getName());
+
+        if (indexArray.length > 0) {
+            return indexArray[0];
+        } else {
+            var headers = this.headerIndex.getHeaderIndex();
+            var field = recordComponent.getName();
+            for (int i = 0; i < headers.length; i++) {
+                var header = headers[i].replace(" ", "");
+
+                if (header.equalsIgnoreCase(field)) {
+                    return i;
+                }
+            }
+        }
+
+        throw new RuntimeException("no header found for " + recordComponent.getName());
     }
 }

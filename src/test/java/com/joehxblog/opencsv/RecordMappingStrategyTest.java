@@ -7,6 +7,8 @@ import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -18,11 +20,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RecordMappingStrategyTest {
 
-    public record TestRecord(String string, int integer) {}
+    public record TestRecord(String string, String multiWord, int integer) {}
 
-    @Test
-    void testParse() throws IOException {
-        var stringReader = new StringReader("string,integer\none,1");
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "string,multiWord,integer",
+            "String,MultiWord,Integer",
+            "String,Multi Word,Integer"
+    })
+    void testParse(String header) throws IOException {
+        var stringReader = new StringReader(header + "\none,multi,1");
 
         var csvReader = new CSVReader(stringReader);
 
@@ -34,7 +41,7 @@ class RecordMappingStrategyTest {
 
         csvReader.close();
 
-        var expectedList = List.of(new TestRecord("one", 1));
+        var expectedList = List.of(new TestRecord("one", "multi", 1));
 
         assertEquals(expectedList, actualList);
     }
@@ -44,7 +51,7 @@ class RecordMappingStrategyTest {
         var stringWriter = new StringWriter();
 
         var list = List.of(
-                new TestRecord("one", 1)
+                new TestRecord("one", "multi", 1)
         );
 
         var csvWriter = new StatefulBeanToCsvBuilder<TestRecord>(stringWriter)
@@ -55,7 +62,7 @@ class RecordMappingStrategyTest {
 
         csvWriter.write(list);
 
-        assertEquals("'integer','string'\n'1','one'\n", stringWriter.toString());
+        assertEquals("'integer','multiWord','string'\n'1','multi','one'\n", stringWriter.toString());
     }
 
     @Test
@@ -63,7 +70,7 @@ class RecordMappingStrategyTest {
         var stringWriter = new StringWriter();
 
         var originalList = List.of(
-                new TestRecord("one", 1)
+                new TestRecord("one", "multi", 1)
         );
 
         var csvWriter = new StatefulBeanToCsvBuilder<TestRecord>(stringWriter)
